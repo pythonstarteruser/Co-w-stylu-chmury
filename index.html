@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Releases</title>
+<style>
+body { font-family: monospace; }
+a { text-decoration: none; }
+</style>
+</head>
+<body>
+<h1>Index of /releases/</h1>
+<pre id="list">Loading...</pre>
+
+<script>
+async function load() {
+    const repo = "USERNAME/REPO";     // ← wpisz swoje repo
+    const path = "releases";          // ← katalog w repo
+    const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+    let data = await fetch(url).then(r => r.json());
+
+    let html = "";
+    for (let f of data) {
+        html += `<a href="${f.path}">${f.name}</a>\n`;
+    }
+    document.getElementById("list").textContent = html;
+}
+load();
+</script>
+</body>
+</html>
