@@ -1,30 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Releases</title>
+<meta charset="UTF-8">
+<title>Index of /releases/</title>
 <style>
-body { font-family: monospace; }
-a { text-decoration: none; }
+body {
+    font-family: monospace;
+    background-color: #fff;
+    color: #000;
+    margin: 20px;
+}
+h1 {
+    font-size: 18px;
+}
+pre {
+    font-family: monospace;
+    font-size: 14px;
+}
+a {
+    color: #0000EE;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
 </style>
 </head>
 <body>
 <h1>Index of /releases/</h1>
-<pre id="list">Loading...</pre>
+<pre id="file-list">Loading...</pre>
 
 <script>
-async function load() {
-    const repo = "USERNAME/REPO";     // ← wpisz swoje repo
-    const path = "releases";          // ← katalog w repo
-    const url = `https://api.github.com/repos/${repo}/contents/${path}`;
-    let data = await fetch(url).then(r => r.json());
+// --- KONFIGURACJA ---
+const username = "pythonstarteruser"; // wpisz swój GitHub username
+const repo = "Co-w-stlyu-chmury";       // wpisz repo
+const path = "main";          // katalog w repo
 
-    let html = "";
-    for (let f of data) {
-        html += `<a href="${f.path}">${f.name}</a>\n`;
+// --- FUNKCJA ŁADUJĄCA PLIKI ---
+async function loadFiles() {
+    const url = `https://api.github.com/repos/${username}/${repo}/contents/${path}`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+            let html = "";
+            data.forEach(file => {
+                const name = file.name;
+                const href = file.download_url ? file.download_url : file.html_url;
+                const sizeKB = file.size ? (file.size/1024).toFixed(1) + " KB" : "-";
+                html += `${name.padEnd(50)} ${sizeKB}\n<a href="${href}">[Download]</a>\n`;
+            });
+            document.getElementById("file-list").textContent = html;
+        } else {
+            document.getElementById("file-list").textContent = "No files found.";
+        }
+    } catch (err) {
+        document.getElementById("file-list").textContent = "Error loading files.";
+        console.error(err);
     }
-    document.getElementById("list").textContent = html;
 }
-load();
+
+loadFiles();
 </script>
 </body>
 </html>
